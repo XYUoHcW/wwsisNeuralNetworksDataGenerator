@@ -10,7 +10,7 @@ normY <- (uczace_calosc$y-minY)/(maxY-minY)
 
 data = cbind(uczace_calosc$normX1, uczace_calosc$normX2, normY);
 colnames(data) <- c("x1", "x2", "y")
-h = c(5, 3)
+h = c(10, 8)
 net.function <- neuralnet(y ~ x1+x2,data, hidden=h, threshold=0.01)
 
 

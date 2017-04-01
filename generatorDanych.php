@@ -15,10 +15,15 @@ $z = ['y'];
 
 $xNorm = ['normX1'];
 $yNorm = ['normX2'];
-$zNorm = ['normY'];
+$zNorm = [];
 
 $randX = ['randX1'];
 $randY = ['randX2'];
+$randZ = ['randY'];
+
+
+$normRandX = ['normRandX1'];
+$normRandY = ['normRandX2'];
 
 $xVal = $minX;
 $yVal = $minY;
@@ -33,11 +38,15 @@ while ($yVal <= $maxY) {
    $yNormValue = normalize($yVal, $minY, $maxY);
    $xNorm[] = $xNormValue; 
    $yNorm[] = $yNormValue;
-   $zNorm[] = definedFunction($xNormValue, $yNormValue);
 
 
-   $randX[] = random($minX, $maxX, $decimals);
-   $randY[] = random($minY, $maxY, $decimals);
+   $rx = random($minX, $maxX, $decimals);
+   $ry = random($minY, $maxY, $decimals);
+   $randX[] = $rx;
+   $randY[] = $ry;
+   $normRandX[] = normalize($rx, $minX, $maxX);
+   $normRandY[] = normalize($ry, $minY, $maxY);
+   $randZ[] = definedFunction($rx, $ry);
 
    $xVal += $xIncrement;
 
@@ -47,18 +56,38 @@ while ($yVal <= $maxY) {
    }
 }
 
-$generatedData = [$x, $y, $z, $xNorm, $yNorm, $zNorm, $randX, $randY];
+$zNorm = normalizeArr($z);
+$generatedData = [$x, $y, $z, $xNorm, $yNorm, $zNorm, $randX, $randY, $randZ, $normRandX, $normRandY];
 
 generateCsv($generatedData);
 
 function definedFunction($x1, $x2)
 {
+    return pow($x1, 2)+5*$x1-2*pow($x2, 3);
+    return 9*$x1-7*$x2;
     return 3*$x1+8*$x2;
 }
 
 function normalize($val, $min, $max)
 {
     return ($val-$min)/($max-$min);
+}
+
+function normalizeArr(array $arr)
+{
+    $min = min($arr);
+    $max = max($arr);
+    $normalized = ['normY'];
+    $first = true;
+    foreach ($arr as $value) {
+        if (true === $first) {
+            $first = false;
+            continue;
+        }
+        $normalized[] = normalize($value, $min, $max);
+    }
+
+    return $normalized;
 }
 
 function random($min, $max, $decimals)
@@ -83,7 +112,7 @@ function valuesString(array $generatedData)
             continue;
         }
         if (count($dataSet) !== count($prev)) {
-            throw Exception('Zbiory danych nie sa rowne!');
+            throw Exception('Zbiory danych nie sa rowne!' . $dataDet[0]);
         }
     }
 
@@ -121,7 +150,7 @@ function valuesStringColumns(array $generatedData)
             continue;
         }
         if (count($dataSet) !== count($prev)) {
-            throw Exception('Zbiory danych nie sa rowne!');
+            throw new Exception('Zbiory danych nie sa rowne!' . $dataSet[0]);
         }
     }
 
